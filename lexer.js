@@ -20,7 +20,11 @@ function tokenize(sourceCode) {
     console.log(src);
     // build tokens until we run out of characters
     while (src.length > 0) {
-        if (src[0] === "+" || src[0] === "-" || src[0] === "*" || src[0] === "/" || src[0] === "%") {
+        if (src[0] === "+" ||
+            src[0] === "-" ||
+            src[0] === "*" ||
+            src[0] === "/" ||
+            src[0] === "%") {
             tokens.push(token(src.shift(), TokenType.ArithmeticOperator));
         }
         else if (src[0] === "=") {
