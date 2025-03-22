@@ -85,6 +85,6 @@ function tokenize(sourceCode: string): Token[] {
   return tokens;
 }
 
-const code = "let x = 55 + 45";
+const code = "let x = 55";
 const tokens = tokenize(code);
-console.log(tokens);
+console.log("tokenized values : ", tokens);

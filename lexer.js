@@ -82,6 +82,6 @@ function tokenize(sourceCode) {
     }
     return tokens;
 }
-var code = "let x = 55 + 45";
+var code = "let x = 55";
 var tokens = tokenize(code);
-console.log(tokens);
+console.log("tokenized values : ", tokens);
