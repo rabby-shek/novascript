@@ -40,7 +40,6 @@ function isSkipAble(src: string): boolean {
 function tokenize(sourceCode: string): Token[] {
   const tokens: Token[] = [];
   const src = sourceCode.split("");
-  console.log(src);
   // build tokens until we run out of characters
   while (src.length > 0) {
     if (

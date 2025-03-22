@@ -35,7 +35,6 @@ function isSkipAble(src) {
 function tokenize(sourceCode) {
     var tokens = [];
     var src = sourceCode.split("");
-    console.log(src);
     // build tokens until we run out of characters
     while (src.length > 0) {
         if (src[0] === "+" ||
