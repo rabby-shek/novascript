@@ -17,6 +17,9 @@ interface Token {
 function token(value = "", type: TokenType): Token {
   return { value, type };
 }
+function isAlpha(src: string): boolean {
+  return src.toLowerCase() !== src.toUpperCase();
+}
 function tokenize(sourceCode: string): Token[] {
   const tokens: Token[] = [];
   const src = sourceCode.split("");
