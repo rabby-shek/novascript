@@ -1,4 +1,14 @@
 {
+  "name": "NovaScript",
+  "author": "MD Rabby Shek Suvo",
+  "version": "1.0.0",
+  "description": "A custom scripting language project",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "live": "tsc -w",
+    "result": "node dist/index.js"
+  },
   "devDependencies": {
     "@types/node": "^22.13.11"
   }
