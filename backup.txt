@@ -1,0 +1,10 @@
+// document.getElementById("run")?.addEventListener("click", () => {
+//   const code = (document.getElementById("codeEditor") as HTMLTextAreaElement)
+//     .value;
+//   const tokens = tokenize(code);
+//   document.getElementById("output")!.innerText = JSON.stringify(
+//     tokens,
+//     null,
+//     2
+//   );
+// });

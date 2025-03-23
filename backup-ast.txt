@@ -1,0 +1,231 @@
+enum TokenType {
+  Number,
+  String,
+  Identifier,
+  ArithmeticOperator,
+  AssignmentOperator,
+  LogicalOperator,
+  ComparisonOperator,
+  BitwiseOperator,
+  Keyword,
+  Punctuation,
+  Whitespace,
+  Comment,
+  Let,
+  Const,
+  Var,
+  Function,
+  Return,
+  If,
+  Else,
+  While,
+  For,
+  Do,
+  Switch,
+  Case,
+  Default,
+  Break,
+  Continue,
+  New,
+  Try,
+  Catch,
+  Finally,
+  Throw,
+  Class,
+  Extends,
+  Super,
+  This,
+  Import,
+  Export,
+  From,
+  Async,
+  Await,
+  Semicolon,
+  CurlyBracket,
+  SquareBracket,
+  Parenthesis,
+  Dot // Added token for dot operator
+}
+
+const KEYWORDS: Record<string, TokenType> = {
+  let: TokenType.Let,
+  const: TokenType.Const,
+  var: TokenType.Var,
+  function: TokenType.Function,
+  return: TokenType.Return,
+  if: TokenType.If,
+  else: TokenType.Else,
+  while: TokenType.While,
+  for: TokenType.For,
+  do: TokenType.Do,
+  switch: TokenType.Switch,
+  case: TokenType.Case,
+  default: TokenType.Default,
+  break: TokenType.Break,
+  continue: TokenType.Continue,
+  new: TokenType.New,
+  try: TokenType.Try,
+  catch: TokenType.Catch,
+  finally: TokenType.Finally,
+  throw: TokenType.Throw,
+  class: TokenType.Class,
+  extends: TokenType.Extends,
+  super: TokenType.Super,
+  this: TokenType.This,
+  import: TokenType.Import,
+  export: TokenType.Export,
+  from: TokenType.From,
+  async: TokenType.Async,
+  await: TokenType.Await,
+};
+
+interface Token {
+  type: TokenType;
+  value: string;
+}
+
+interface ASTNode {
+  type: string;
+  value?: string | ASTNode; 
+  name?: string;
+  left?: ASTNode;
+  right?: ASTNode;
+  body?: ASTNode[];
+  operator?: string;
+  callee?: ASTNode;  // For function calls
+  arguments?: ASTNode[];  // For function arguments
+  object?: ASTNode;  // For object property access
+  property?: ASTNode;  // For object property
+}
+
+function token(value = "", type: TokenType): Token {
+  return { value, type };
+}
+
+function isAlpha(src: string): boolean {
+  return /^[a-zA-Z_]$/.test(src);
+}
+
+function isInt(src: string): boolean {
+  return /^[0-9]$/.test(src);
+}
+
+function isWhitespace(src: string): boolean {
+  return /\s/.test(src);
+}
+
+function tokenize(sourceCode: string): Token[] {
+  const tokens: Token[] = [];
+  const src = sourceCode.split("");
+
+  while (src.length > 0) {
+    const char = src[0];
+
+    if ("+-*/%".includes(char)) {
+      tokens.push(token(src.shift()!, TokenType.ArithmeticOperator));
+    } else if ("&|^~".includes(char)) {
+      tokens.push(token(src.shift()!, TokenType.BitwiseOperator));
+    } else if (char === "=") {
+      tokens.push(token(src.shift()!, TokenType.AssignmentOperator));
+    } else if ("!<>".includes(char)) {
+      tokens.push(token(src.shift()!, TokenType.ComparisonOperator));
+    } else if (char === "(") {
+      tokens.push(token(src.shift()!, TokenType.Parenthesis));
+    } else if (char === ")") {
+      tokens.push(token(src.shift()!, TokenType.Parenthesis));
+    } else if (char === "{") {
+      tokens.push(token(src.shift()!, TokenType.CurlyBracket));
+    } else if (char === "}") {
+      tokens.push(token(src.shift()!, TokenType.CurlyBracket));
+    } else if (char === "[") {
+      tokens.push(token(src.shift()!, TokenType.SquareBracket));
+    } else if (char === "]") {
+      tokens.push(token(src.shift()!, TokenType.SquareBracket));
+    } else if (char === ";") {
+      tokens.push(token(src.shift()!, TokenType.Semicolon));
+    } else if (char === ".") { // Dot operator
+      tokens.push(token(src.shift()!, TokenType.Dot));
+    } else if (isInt(char)) {
+      let num = "";
+      while (src.length > 0 && isInt(src[0])) {
+        num += src.shift();
+      }
+      tokens.push(token(num, TokenType.Number));
+    } else if (isAlpha(char)) {
+      let identifier = "";
+      while (src.length > 0 && isAlpha(src[0])) {
+        identifier += src.shift();
+      }
+      if (KEYWORDS[identifier] !== undefined) {
+        tokens.push(token(identifier, KEYWORDS[identifier]));
+      } else {
+        tokens.push(token(identifier, TokenType.Identifier));
+      }
+    } else if (isWhitespace(char)) {
+      src.shift();
+    } else if (char === "\"" || char === "'") {
+      let str = "";
+      const quote = src.shift();
+      while (src.length > 0 && src[0] !== quote) {
+        str += src.shift();
+      }
+      src.shift();
+      tokens.push(token(str, TokenType.String));
+    } else if (char === "/" && src[1] === "/") {
+      let comment = "";
+      while (src.length > 0 && src[0] !== "\n") {
+        comment += src.shift();
+      }
+      tokens.push(token(comment, TokenType.Comment));
+    } else {
+      console.error("Unknown token", char);
+      process.exit(1);
+    }
+  }
+  return tokens;
+}
+
+function parse(tokens: Token[]): ASTNode {
+  const ast: ASTNode = { type: "Program", body: [] };
+
+  while (tokens.length > 0) {
+    const token = tokens.shift()!;
+
+    if (token.type === TokenType.Identifier) {
+      const identifier = token.value;
+      const nextToken = tokens[0];
+
+      // Handling member expressions, e.g., console.log
+      if (nextToken && nextToken.type === TokenType.Dot) {
+        tokens.shift();  // Consume the dot operator
+        const property = tokens.shift();
+        ast.body!.push({
+          type: "ExpressionStatement",
+          expression: {
+            type: "CallExpression",
+            callee: {
+              type: "MemberExpression",
+              object: { type: "Identifier", name: identifier },
+              property: { type: "Identifier", name: property!.value }
+            },
+            arguments: [{ type: "Literal", value: "hello" }] // Hardcoded argument for now
+          }
+        });
+      }
+    }
+  }
+
+  return ast;
+}
+
+const code = `
+class Game{
+constructor(){
+}
+}
+`;
+const tokens = tokenize(code);
+console.log("Tokenized values:", tokens);
+
+const ast = parse(tokens);
+console.log("Parsed AST:", JSON.stringify(ast, null, 2));
