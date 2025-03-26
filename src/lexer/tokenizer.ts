@@ -84,6 +84,8 @@ export function tokenize(sourceCode: string): Token[] {
         comment += src.shift();
       }
       tokens.push(token(comment, TokenType.Comment));
+    } else if (char === ":") {
+      tokens.push(token(src.shift()!, TokenType.Colon));
     } else {
       console.error("Unknown token", char);
       process.exit(1);
