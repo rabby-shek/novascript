@@ -1,6 +1,11 @@
 export enum TokenType {
   Number = "Number",
   String = "String",
+  Boolean = "Boolean",
+  Null = "Null",
+  Undefined = "Undefined",
+  Array = "Array",
+  Object = "Object",
   Identifier = "Identifier",
   ArithmeticOperator = "ArithmeticOperator",
   AssignmentOperator = "AssignmentOperator",
@@ -144,5 +149,10 @@ export const KEYWORDS: Record<string, TokenType> = {
   templateLiteralType: TokenType.TemplateLiteralType,
   indexedAccessType: TokenType.IndexedAccessType,
   tuple: TokenType.Tuple,
-  colon: TokenType.Colon
+  colon: TokenType.Colon,
+  number: TokenType.Number,
+  string: TokenType.String,
+  boolean: TokenType.Boolean,
+  null: TokenType.Null,
+  undefined: TokenType.Undefined,
 };
