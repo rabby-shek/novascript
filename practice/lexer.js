@@ -15,9 +15,16 @@ var TokenType;
 function token(value, type) {
     return { value: value, type: type };
 }
+function isAlpha(src) {
+    return /^[A-Za-z]$/.test(src);
+}
+function isInt(src) {
+    return /^-?\d+]$/.test(src);
+}
 function tokenize(sourceCode) {
     var tokens = new Array();
     var src = sourceCode.split("");
+    //parse string until the end of the length
     while (src.length > 0) {
         if (src[0] == "(") {
             tokens.push(token(src.shift(), TokenType.OpenParenthesis));
@@ -34,8 +41,19 @@ function tokenize(sourceCode) {
         else if (src[0] == "=") {
             tokens.push(token(src.shift(), TokenType.Equal));
         }
+        else {
+            // Handle multi character token
+            // build number tokens
+            if (isInt(src[0])) {
+                var num = "";
+                while (src.length > 0 && isInt(src[0])) {
+                    num += src.shift();
+                }
+                tokens.push(token(num, TokenType.Number));
+            }
+        }
     }
     return tokens;
 }
-var tokenizedValues = tokenize("(");
+var tokenizedValues = tokenize("(34)");
 console.log(tokenizedValues);
